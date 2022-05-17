@@ -1,74 +1,74 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 import styles from './Phonebook.module.css';
 
-class Phonebook extends Component {
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-  };
+function Phonebook({ onSubmit }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  state = {
-    name: '',
-    number: '',
-  };
+  const nameInputId = nanoid();
+  const numberInputId = nanoid();
 
-  nameInputId = nanoid();
-  numberInputId = nanoid();
-
-  handleChange = e => {
+  const handleChange = e => {
     const { name, value } = e.currentTarget;
 
-    this.setState({ [name]: value });
+    switch (name) {
+      case 'name':
+        return setName(value);
+      case 'number':
+        return setNumber(value);
+      default:
+        return;
+    }
   };
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
 
-    this.props.onSubmit(this.state);
+    onSubmit(name, number);
 
-    this.reset();
+    setName('');
+    setNumber('');
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
-  };
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <label htmlFor={nameInputId} className={styles.label}>
+        <p className={styles.text}>Name</p>
+        <input
+          className={styles.input}
+          type="text"
+          name="name"
+          value={name}
+          id={nameInputId}
+          onChange={handleChange}
+        />
+      </label>
 
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit} className={styles.form}>
-        <label htmlFor={this.nameInputId} className={styles.label}>
-          <p className={styles.text}>Name</p>
-          <input
-            className={styles.input}
-            type="text"
-            name="name"
-            value={this.state.name}
-            id={this.nameInputId}
-            onChange={this.handleChange}
-          />
-        </label>
-
-        <label htmlFor={this.numberInputId} className={styles.label}>
-          <p className={styles.text}>Number</p>
-          <input
-            className={styles.input}
-            type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces,dashes, parentheses and can start with +"
-            required
-            id={this.numberInputId}
-            value={this.state.number}
-            onChange={this.handleChange}
-          />
-        </label>
-        <button type="submit" className={styles.button}>
-          Add contact
-        </button>
-      </form>
-    );
-  }
+      <label htmlFor={numberInputId} className={styles.label}>
+        <p className={styles.text}>Number</p>
+        <input
+          className={styles.input}
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\{1,4}[-.\s]?\d{1,9}"
+          title="Phone number must be digits and can contain spaces,dashes, parentheses and can start with +"
+          required
+          id={numberInputId}
+          value={number}
+          onChange={handleChange}
+        />
+      </label>
+      <button type="submit" className={styles.button}>
+        Add contact
+      </button>
+    </form>
+  );
 }
+
+Phonebook.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default Phonebook;
